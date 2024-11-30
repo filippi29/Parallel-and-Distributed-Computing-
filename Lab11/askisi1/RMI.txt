@@ -1,0 +1,44 @@
+Το RMI Registry είναι μια υπηρεσία στο Java RMI (Remote Method Invocation) που λειτουργεί σαν "τηλεφωνικός κατάλογος" για απομακρυσμένα αντικείμενα. 
+Αποτελεί το κεντρικό σημείο μέσω του οποίου οι πελάτες μπορούν να βρίσκουν και να επικοινωνούν με απομακρυσμένα αντικείμενα που είναι διαθέσιμα σε έναν διακομιστή.
+
+
+!!!!Στο αρχείο CalscServer.java, ο διακομιστής δημιουργεί το απομακρυσμένο αντικείμενο CalcImpl και το δημοσιεύει στο RMI Registry.
+
+// Δημιουργία αντικειμένου
+Calc robj = new CalcImpl();  // Το απομακρυσμένο αντικείμενο υλοποίησης
+
+// Δημιουργία RMI Registry στη θύρα 1099
+Registry registry = LocateRegistry.createRegistry(PORT);
+
+// Δημοσίευση του αντικειμένου με όνομα "MyAddition"
+registry.rebind("MyAddition", robj);
+System.out.println("Remote object bounded.");
+
+
+
+!!!!Στο αρχείο CalcClient.java, ο πελάτης συνδέεται στο RMI Registry και ανακτά το απομακρυσμένο αντικείμενο.
+
+// Σύνδεση στο RMI Registry στη θύρα 1099 του localhost
+Registry registry = LocateRegistry.getRegistry(HOST, PORT);
+
+// Αναζήτηση του απομακρυσμένου αντικειμένου με το όνομα "MyAddition"
+Calc ref = (Calc) registry.lookup("MyAddition");
+
+// Κλήση της απομακρυσμένης μεθόδου calc
+int result = ref.calc("+", 5, 6);
+System.out.println("The adding 5 and 6 is " + result);
+
+
+!!!! STUB AND SKELETON
+
+Το stub είναι ο "αντιπρόσωπος" του απομακρυσμένου αντικειμένου στον πελάτη. 
+Όταν καλείται μια μέθοδος από τον πελάτη, το stub στέλνει το αίτημα στον διακομιστή.
+
+Στην πλευρά του διακομιστή, το skeleton λαμβάνει το αίτημα και το προωθεί στο πραγματικό αντικείμενο.
+
+ Στο CalcClient.java, το αντικείμενο ref είναι το stub. Στέλνει την κλήση της μεθόδου calc στον διακομιστή.
+Το CalcImpl είναι το απομακρυσμένο αντικείμενο στον διακομιστή. Το skeleton λαμβάνει το αίτημα από το stub, εκτελεί τη μέθοδο calc και επιστρέφει το αποτέλεσμα.
+
+
+
+
